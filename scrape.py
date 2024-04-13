@@ -57,6 +57,7 @@ def run_scrape():
     # click the login button
     login_btn = driver.find_element(By.CLASS_NAME, "pb-button")
     login_btn.send_keys(Keys.RETURN)
+    print('successfully logged in')
 
 
     # Wait for the redirect to a new page after successful login
@@ -65,7 +66,9 @@ def run_scrape():
     )
 
     # click on link button
-    link_btn = driver.find_element(By.XPATH, '//*[@id="app"]/div/div/div/div[1]/div[2]/div/div/div/div[2]/div/div[3]/div/div[2]/div/div[3]/div[1]/div/div/div/div/div[2]/table/tbody/tr/td[9]/button')
+    link_btn = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable((By.XPATH, '//*[@id="app"]/div/div/div/div[1]/div[2]/div/div/div/div[2]/div/div[3]/div/div[2]/div/div[3]/div[1]/div/div/div/div/div[2]/table/tbody/tr/td[9]/button'))
+    )
     link_btn.click()
 
     # Wait for a short while to allow the copying to happen
