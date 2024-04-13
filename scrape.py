@@ -77,13 +77,9 @@ def run_scrape():
 
     # Execute JavaScript to send the request from the webpage and store the copied link in a variable
     copied_link_script = """
-    fetch("https://stars.ylopo.com/api/1.0/lead/46706799/encryptedLink?personId=46706799&runSearch=true&savedSearchId=55891023")
+    return fetch("https://stars.ylopo.com/api/1.0/lead/46706799/encryptedLink?personId=46706799&runSearch=true&savedSearchId=55891023")
         .then(response => response.json())
-        .then(data => {
-            var copiedLink = data.shortLink;
-            console.log(copiedLink);
-            return data;
-        })
+        .then(data => data.shortLink)
         .catch(error => console.error('Error:', error));
     """
     copied_link = driver.execute_script("return (function() { " + copied_link_script + " })()")
