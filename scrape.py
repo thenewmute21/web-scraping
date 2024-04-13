@@ -1,4 +1,3 @@
-import pyperclip
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -17,7 +16,7 @@ dashboard_url = 'https://stars.ylopo.com/lead-detail/7675efb9-35d7-460f-b017-245
 
 # Create Chrome options for headless mode
 options = webdriver.ChromeOptions()
-options.add_argument("--headless")  # Run in headless mode
+# options.add_argument("--headless")  # Run in headless mode
 options.add_experimental_option(
     "prefs", {
         # block image loading
@@ -72,12 +71,25 @@ def run_scrape():
     link_btn.click()
 
     # Wait for a short while to allow the copying to happen
-    time.sleep(1)
+    time.sleep(2)
 
     # Retrieve the copied text from the clipboard using pyperclip
-    copied_text = pyperclip.paste()
-    print("Copied link:", copied_text)
+
+    # Execute JavaScript to send the request from the webpage and store the copied link in a variable
+    copied_link_script = """
+    fetch("https://stars.ylopo.com/api/1.0/lead/46706799/encryptedLink?personId=46706799&runSearch=true&savedSearchId=55891023")
+        .then(response => response.json())
+        .then(data => {
+            var copiedLink = data.shortLink;
+            console.log(data)
+            console.log(copiedLink);
+        })
+        .catch(error => console.error('Error:', error));
+    """
+    copied_link = driver.execute_script("return (function() { " + copied_link_script + " })()")
+
+    print("Copied link:", copied_link)
 
     driver.close()
 
-    return copied_text
+    return copied_link
