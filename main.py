@@ -12,5 +12,6 @@ async def root():
     try:
         copied_text = run_scrape()
         return {"copied_text": copied_text}
-    except:
+    except Exception as error:
+        print("An error occurred:", type(error).__name__, "–", error)
         raise HTTPException(status_code=400, detail='something went wrong')
