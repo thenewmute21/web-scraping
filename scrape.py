@@ -16,7 +16,7 @@ dashboard_url = 'https://stars.ylopo.com/lead-detail/7675efb9-35d7-460f-b017-245
 
 # Create Chrome options for headless mode
 options = webdriver.ChromeOptions()
-# options.add_argument("--headless")  # Run in headless mode
+options.add_argument("--headless")  # Run in headless mode
 options.add_experimental_option(
     "prefs", {
         # block image loading
