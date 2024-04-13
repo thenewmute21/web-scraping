@@ -81,8 +81,8 @@ def run_scrape():
         .then(response => response.json())
         .then(data => {
             var copiedLink = data.shortLink;
-            console.log(data)
             console.log(copiedLink);
+            return data;
         })
         .catch(error => console.error('Error:', error));
     """
