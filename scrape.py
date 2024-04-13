@@ -24,19 +24,19 @@ options.add_experimental_option(
     }
 )
 
-def run_scrape():
+def run_scrape(email, password):
     driver = webdriver.Chrome(options=options)
     driver.get(website_redirect_url)
 
     # input email in email field
     email_elem = driver.find_element(By.CSS_SELECTOR, "input[type=text]")
     email_elem.clear()
-    email_elem.send_keys("thenewmute21@gmail.com")
+    email_elem.send_keys(email)
 
     # input passowrd in password field
     password_elem = driver.find_element(By.CSS_SELECTOR, "input[type=password]")
     password_elem.clear()
-    password_elem.send_keys("Ylopo*12")
+    password_elem.send_keys(password)
 
 
     # by-pass recapcha
@@ -45,8 +45,6 @@ def run_scrape():
     response = solver.recaptcha(sitekey=SITE_KEY, url=website_url)
     code = response['code']
     print(f"Successfully solved the Captcha. The solve code is {code}")
-
-    driver.implicitly_wait(20)
 
     driver.execute_script("document.getElementById('g-recaptcha-response').style.display = '';")
     recaptcha_text_area = driver.find_element(By.ID, "g-recaptcha-response")
@@ -63,15 +61,6 @@ def run_scrape():
     wait = WebDriverWait(driver, 10).until(
         EC.url_to_be(dashboard_url)
     )
-
-    # click on link button
-    link_btn = WebDriverWait(driver, 20).until(
-        EC.element_to_be_clickable((By.XPATH, '//*[@id="app"]/div/div/div/div[1]/div[2]/div/div/div/div[2]/div/div[3]/div/div[2]/div/div[3]/div[1]/div/div/div/div/div[2]/table/tbody/tr/td[9]/button'))
-    )
-    link_btn.click()
-
-    # Wait for a short while to allow the copying to happen
-    time.sleep(2)
 
     # Retrieve the copied text from the clipboard using pyperclip
 
