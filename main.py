@@ -10,6 +10,7 @@ resonse_webhook_url = "https://hook.integrator.boost.space/k80rinp9fgzwhlysiohlv
 class UserCredential(BaseModel):
     email: EmailStr
     password: str
+    url : str
 
 
 @app.get("/")
@@ -30,6 +31,7 @@ async def main(user_credential: UserCredential, background_tasks: BackgroundTask
         run_scrape_and_send_webhook, 
         user_credential.email,
         user_credential.password,
+        user_credential.url
     )
     return {'message': f'Scraping in progress. Check webhook for results. 👉 {resonse_webhook_url}'}
     

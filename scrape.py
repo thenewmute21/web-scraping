@@ -6,13 +6,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from twocaptcha import TwoCaptcha
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
-import time
+from urllib.parse import urlparse
 
 SITE_KEY = '6LezG3omAAAAAGrXICTuXz0ueeMFIodySqJDboLT'
 api_key = '147f2a193a2db639a49c64a00ed66cd5'
-website_url = 'https://stars.ylopo.com/auth'
-website_redirect_url = 'https://stars.ylopo.com/auth?redirect=/lead-detail/7675efb9-35d7-460f-b017-245e4d76e3a7'
-dashboard_url = 'https://stars.ylopo.com/lead-detail/7675efb9-35d7-460f-b017-245e4d76e3a7'
+base_url = 'https://stars.ylopo.com/auth'
 
 # Create Chrome options for headless mode
 options = webdriver.ChromeOptions()
@@ -24,9 +22,11 @@ options.add_experimental_option(
     }
 )
 
-def run_scrape(email, password):
+def run_scrape(email, password, website_url):
+    dashboard_url = base_url + urlparse(website_url).query.split('=')[1] #construct base url
+
     driver = webdriver.Chrome(options=options)
-    driver.get(website_redirect_url)
+    driver.get(website_url)
 
     # input email in email field
     email_elem = driver.find_element(By.CSS_SELECTOR, "input[type=text]")
@@ -42,7 +42,7 @@ def run_scrape(email, password):
     # by-pass recapcha
     print("Solving Captcha")
     solver = TwoCaptcha(api_key)
-    response = solver.recaptcha(sitekey=SITE_KEY, url=website_url)
+    response = solver.recaptcha(sitekey=SITE_KEY, url=base_url)
     code = response['code']
     print(f"Successfully solved the Captcha. The solve code is {code}")
 
