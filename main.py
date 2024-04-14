@@ -12,6 +12,8 @@ class UserCredential(BaseModel):
     email: EmailStr
     password: str
     url : str
+    FUB_ID: int
+    FUB_email: EmailStr
     
 
 @app.post("/")
@@ -20,15 +22,21 @@ async def main(user_credential: UserCredential, background_tasks: BackgroundTask
         run_scrape_and_send_webhook, 
         user_credential.email,
         user_credential.password,
-        user_credential.url
+        user_credential.url,
+        user_credential.FUB_ID,
+        user_credential.FUB_email
     )
     return {'message': f'Scraping in progress. Check webhook for results. 👉 {resonse_webhook_url}'}
     
 
-async def run_scrape_and_send_webhook(email: EmailStr, password: str, url: str):
+async def run_scrape_and_send_webhook(email: EmailStr, password: str, url: str, FUB_ID: int, FUB_email: EmailStr):
     try:
         copied_text = run_scrape(email, password, url)
-        send_webhook({"copied_text": copied_text})
+        send_webhook({
+            "copied_text": copied_text,
+            "FUB_ID": FUB_ID,
+            "FUB_email": FUB_email
+            })
     except Exception as error:
         print("An error occurred:", type(error).__name__, "–", error)
 
