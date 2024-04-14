@@ -43,4 +43,4 @@ async def run_scrape_and_send_webhook(email: EmailStr, password: str):
     
 def send_webhook(response):
     print('sending weebhook response')
-    requests.post(resonse_webhook_url, url=response)
+    requests.post(resonse_webhook_url, json=response)
