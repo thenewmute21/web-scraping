@@ -7,6 +7,7 @@ from twocaptcha import TwoCaptcha
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 from urllib.parse import urlparse
+import time
 
 SITE_KEY = '6LezG3omAAAAAGrXICTuXz0ueeMFIodySqJDboLT'
 api_key = '147f2a193a2db639a49c64a00ed66cd5'
@@ -58,10 +59,15 @@ def run_scrape(email, password, website_url):
 
 
     # Wait for the redirect to a new page after successful login
-    wait = WebDriverWait(driver, 10).until(
-        EC.url_to_be(dashboard_url)
-    )
+    # wait = WebDriverWait(driver, 10).until(
+    #     EC.url_to_be(dashboard_url)
+    # )
 
+
+    # wait for second page to load and button found
+    link_btn = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable((By.XPATH, '//*[@id="app"]/div/div/div/div[1]/div[2]/div/div/div/div[2]/div/div[3]/div/div[2]/div/div[3]/div[1]/div/div/div/div/div[2]/table/tbody/tr/td[9]/button'))
+    )
     # Retrieve the copied text from the clipboard using pyperclip
 
     # Execute JavaScript to send the request from the webpage and store the copied link in a variable
