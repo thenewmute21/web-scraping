@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from pydantic import BaseModel, EmailStr, AnyHttpUrl
 
+import uvicorn
 import requests
 from scrape import run_scrape
 
@@ -51,3 +52,7 @@ def send_webhook(response):
     else:
         print('Webhook failed with status code:', res.status_code)
         print('Response from webhook:', res.text)
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
