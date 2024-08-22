@@ -16,7 +16,9 @@ base_url = 'https://stars.ylopo.com/auth'
 
 # Create Chrome options for headless mode
 options = webdriver.ChromeOptions()
-# options.add_argument("--headless")  # Run in headless mode
+options.add_argument("--headless")  # Run in headless mode
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
 options.add_argument("--log-level=DEBUG")
 options.add_experimental_option(
     "prefs", {
