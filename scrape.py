@@ -8,6 +8,7 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 from urllib.parse import urlparse
 import time
+import json
 
 SITE_KEY = '6LezG3omAAAAAGrXICTuXz0ueeMFIodySqJDboLT'
 api_key = '147f2a193a2db639a49c64a00ed66cd5'
@@ -15,7 +16,8 @@ base_url = 'https://stars.ylopo.com/auth'
 
 # Create Chrome options for headless mode
 options = webdriver.ChromeOptions()
-options.add_argument("--headless")  # Run in headless mode
+# options.add_argument("--headless")  # Run in headless mode
+options.add_argument("--log-level=DEBUG")
 options.add_experimental_option(
     "prefs", {
         # block image loading
@@ -24,8 +26,6 @@ options.add_experimental_option(
 )
 
 def run_scrape(email, password, website_url):
-    dashboard_url = base_url + urlparse(website_url).query.split('=')[1] #construct base url
-
     driver = webdriver.Chrome(options=options)
     driver.get(website_url)
 
@@ -57,22 +57,45 @@ def run_scrape(email, password, website_url):
     login_btn.send_keys(Keys.RETURN)
     print('successfully logged in')
 
-
-    # Wait for the redirect to a new page after successful login
-    # wait = WebDriverWait(driver, 10).until(
-    #     EC.url_to_be(dashboard_url)
-    # )
-
-
     # wait for second page to load and button found
     link_btn = WebDriverWait(driver, 20).until(
-        EC.element_to_be_clickable((By.XPATH, '//*[@id="app"]/div/div/div/div[1]/div[2]/div/div/div/div[2]/div/div[3]/div/div[2]/div/div[3]/div[1]/div/div/div/div/div[2]/table/tbody/tr/td[9]/button'))
+        EC.presence_of_element_located((By.CLASS_NAME, 'ylopo-button'))
     )
     # Retrieve the copied text from the clipboard using pyperclip
 
+
+    # Get user id and search id
+    print(driver.current_url)
+    url_slug = driver.current_url.split('/')[-1]
+    print('url_slug: ', url_slug)
+
+    get_user_info_script = f"""
+    return fetch("https://stars.ylopo.com/api/1.0/open/{url_slug}?includes[]=allSavedSearches.searchAlerts.valuationReport")
+        .then(response => response.json())
+        .then(data => {{
+            const userId = data.id;
+            const searchId = data.buyerSavedSearches && data.buyerSavedSearches.length > 0 
+                ? data.buyerSavedSearches[0].id 
+                : null;
+            return [userId, searchId];
+        }})
+        .catch(error => {{
+            console.error('Error:', error);
+            return null;
+        }});
+    """
+    user_info = driver.execute_script(get_user_info_script)
+
+    if user_info:
+        user_id, search_id = user_info
+        print(f"user_id: {user_id}, search_id: {search_id}")
+    else:
+        print("Failed to retrieve user information.")
+
+
     # Execute JavaScript to send the request from the webpage and store the copied link in a variable
-    copied_link_script = """
-    return fetch("https://stars.ylopo.com/api/1.0/lead/46706799/encryptedLink?personId=46706799&runSearch=true&savedSearchId=55891023")
+    copied_link_script = f"""
+    return fetch("https://stars.ylopo.com/api/1.0/lead/{user_id}/encryptedLink?personId={user_id}&runSearch=true&savedSearchId={search_id}")
         .then(response => response.json())
         .then(data => data.shortLink)
         .catch(error => console.error('Error:', error));
