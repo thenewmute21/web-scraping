@@ -32,6 +32,7 @@ async def main(user_credential: UserCredential, background_tasks: BackgroundTask
 
 async def run_scrape_and_send_webhook(email: EmailStr, password: str, url: str, FUB_ID: int, FUB_email: EmailStr):
     try:
+        print('____started scraping script____')
         copied_text = run_scrape(email, password, url)
         send_webhook({
             "copied_text": copied_text,
